@@ -10,7 +10,7 @@
 import logging
 import unittest
 
-from programmingtheiot.cda.app.ConstrainedDeviceApp import ConstrainedDeviceApp
+from programmingtheiot.cda.app.ConstrainedDeviceApp import ConstrainedDeviceApp 
 
 class ConstrainedDeviceAppTest(unittest.TestCase):
 	"""
