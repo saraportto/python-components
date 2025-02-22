@@ -15,14 +15,15 @@ class BaseSystemUtilTask():
 	
 	"""
 	
-	def __init__(self, name = ConfigConst.NOT_SET, typeID = ConfigConst.DEFAULT_SENSOR_TYPE):
-		pass
+	def __init__(self, name: str = ConfigConst.NOT_SET, typeID: int = ConfigConst.DEFAULT_SENSOR_TYPE):
+		self.name = name
+		self.typeID = typeID
 	
 	def getName(self) -> str:
-		pass
+		return self.name
 	
 	def getTypeID(self) -> int:
-		pass
+		return self.typeID
 	
 	def getTelemetryValue(self) -> float:
 		pass
