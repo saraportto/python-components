@@ -261,6 +261,7 @@ ENABLE_COAP_SERVER_KEY = 'enableCoapServer'
 
 ENABLE_SYSTEM_PERF_KEY = 'enableSystemPerformance'
 ENABLE_SENSING_KEY     = 'enableSensing'
+ENABLE_ACTUATION_KEY   = 'enableActuation'  # Añadir esta línea
 
 HUMIDITY_SIM_FLOOR_KEY   = 'humiditySimFloor'
 HUMIDITY_SIM_CEILING_KEY = 'humiditySimCeiling'
