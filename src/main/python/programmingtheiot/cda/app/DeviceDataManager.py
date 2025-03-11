@@ -252,6 +252,12 @@ class DeviceDataManager(IDataMessageListener):
 		1) Check config: Is there a rule or flag that requires immediate processing of data?
 		2) Act on data: If # 1 is true, determine what - if any - action is required, and execute.
 		"""
+
+		if data is None:
+			print("Advertencia: Se recibió un dato de sensor nulo en _handleSensorDataAnalysis.")
+			return  # Evita continuar con datos inválidos
+
+
 		if self.handleTempChangeOnDevice and data.getTypeID() == ConfigConst.TEMP_SENSOR_TYPE:
 			logging.info("Handle temp change: %s - type ID: %s", str(self.handleTempChangeOnDevice), str(data.getTypeID()))
 

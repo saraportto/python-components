@@ -124,4 +124,3 @@ class BaseActuatorSimTask():
 		logging.info("Simulating %s actuator OFF: %s", self.name, msg)
 
 		return 0
-		
