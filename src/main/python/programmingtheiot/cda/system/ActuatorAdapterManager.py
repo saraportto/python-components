@@ -57,7 +57,7 @@ class ActuatorAdapterManager(object):
     						section=ConfigConst.CONSTRAINED_DEVICE, 
     						key="enableSimulator",
 							)
-
+		
 
 		self.humidifierActuator = None
 		self.hvacActuator       = None
@@ -70,9 +70,21 @@ class ActuatorAdapterManager(object):
 		if not self.useEmulator:
 			# load the environmental tasks for simulated actuation
 			self.humidifierActuator = HumidifierActuatorSimTask()
-
-			# create the HVAC actuator
 			self.hvacActuator = HvacActuatorSimTask()
+		
+		else:
+			# load the environmental tasks for emulated actuation
+			hueModule = import_module('programmingtheiot.cda.emulated.HumidifierEmulatorTask')
+			hueClazz = getattr(hueModule, 'HumidifierEmulatorTask')
+			self.humidifierActuator = hueClazz()
+
+			leDisplayModule = import_module('programmingtheiot.cda.emulated.LedDisplayEmulatorTask')
+			leDisplayClazz = getattr(leDisplayModule, 'LedDisplayEmulatorTask')
+			self.ledDisplayActuator = leDisplayClazz()
+
+			hvacModule  = import_module('programmingtheiot.cda.emulated.HvacEmulatorTask')
+			hveClazz = getattr(hvacModule, 'HvacEmulatorTask')
+			self.hvacActuator = hveClazz()
 
 	def setDataMessageListener(self, listener: IDataMessageListener) -> bool:
 		if self.enableSimulator:  
@@ -95,10 +107,13 @@ class ActuatorAdapterManager(object):
 				# TODO: implement appropriate logging and error handling
 				if aType == ConfigConst.HUMIDIFIER_ACTUATOR_TYPE and self.humidifierActuator:
 					responseData = self.humidifierActuator.updateActuator(data)
+
 				elif aType == ConfigConst.HVAC_ACTUATOR_TYPE and self.hvacActuator:
 					responseData = self.hvacActuator.updateActuator(data)
+
 				elif aType == ConfigConst.LED_DISPLAY_ACTUATOR_TYPE and self.ledDisplayActuator:
 					responseData = self.ledDisplayActuator.updateActuator(data)
+
 				else:
 					logging.warning("No valid actuator type. Ignoring actuation for type: %s", data.getTypeID())
 

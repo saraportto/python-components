@@ -78,11 +78,27 @@ class SensorAdapterManager(object):
 
 		if self.useEmulator:
 			logging.info("Using Emulators.")
+
+			# Emulator tasks
+			try:
+				self.humidityAdapter = import_module(
+					'programmingtheiot.cda.emulated.HumiditySensorEmulatorTask').HumiditySensorEmulatorTask()
+				
+				self.pressureAdapter = import_module(
+					'programmingtheiot.cda.emulated.PressureSensorEmulatorTask').PressureSensorEmulatorTask()
+				
+				self.tempAdapter = import_module(
+					'programmingtheiot.cda.emulated.TemperatureSensorEmulatorTask').TemperatureSensorEmulatorTask()
+				
+				logging.info("Emulator tasks loaded successfully.")
+
+			except ImportError as e:
+				logging.warning("Failed to load emulator tasks: " + str(e))
+
 		else:
 			logging.info("Using real Sensors.")
+			self._initEnvironmentalSensorTasks()
 
-		# See PIOT-CDA-03-006 description for thoughts on the next line of code
-		self._initEnvironmentalSensorTasks()
 
 	def _initEnvironmentalSensorTasks(self):
 		
@@ -151,6 +167,37 @@ class SensorAdapterManager(object):
 			self.pressureAdapter = PressureSensorSimTask(dataSet = pressureData)
 			self.tempAdapter = TemperatureSensorSimTask(dataSet = tempData)
 
+		else:
+			heModule = import_module(
+						'programmingtheiot.cda.emulated.HumiditySensorEmulatorTask', 
+						'HumiditySensorEmulatorTask'
+					)
+			heClazz = getattr(
+						heModule, 
+						'HumiditySensorEmulatorTask'
+					)
+			self.humidityAdapter = heClazz()
+
+			peModule = import_module(
+						'programmingtheiot.cda.emulated.PressureSensorEmulatorTask', 
+						'PressureSensorEmulatorTask'
+						)
+			peClazz = getattr(
+						peModule, 
+						'PressureSensorEmulatorTask'
+						)
+			self.pressureAdapter = peClazz()
+
+			teModule = import_module(
+				'programmingtheiot.cda.emulated.TemperatureSensorEmulatorTask', 
+				'TemperatureSensorEmulatorTask'
+				)
+			teClazz = getattr(
+				teModule, 
+				'TemperatureSensorEmulatorTask'
+				)
+			self.tempAdapter = teClazz()
+	
 	def handleTelemetry(self):
 		humidityData = self.humidityAdapter.generateTelemetry()
 		pressureData = self.pressureAdapter.generateTelemetry()
