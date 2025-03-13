@@ -62,14 +62,24 @@ class SystemPerformanceManager(object):
 		self.cpuUtilTask = SystemCpuUtilTask()
 		self.memUtilTask = SystemMemUtilTask()
 
+
 	def handleTelemetry(self):
 		cpuUtilPct = self.cpuUtilTask.getTelemetryValue()
 		memUtilPct = self.memUtilTask.getTelemetryValue()
 
 		logging.debug("CPU utilization is %s percent, and memory utilization is %s percent.", str(cpuUtilPct), str(memUtilPct))
 		
+		sysPerfData = SystemPerformanceData()
+		sysPerfData.setLocationID(self.locationID)
+		sysPerfData.setCpuUtilization(cpuUtilPct)
+		sysPerfData.setMemoryUtilization(memUtilPct)
+
+		if self.dataMsgListener:
+			self.dataMsgListener.handleSystemPerformanceMessage(data=sysPerfData)
+		
 	def setDataMessageListener(self, listener: IDataMessageListener) -> bool:
-		pass
+		if listener:
+			self.dataMsgListener=listener
 	
 	def startManager(self):
 		'''
