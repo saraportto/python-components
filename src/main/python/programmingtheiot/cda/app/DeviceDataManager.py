@@ -57,7 +57,17 @@ class DeviceDataManager(IDataMessageListener):
 		self.actuatorAdapterMgr = None
 
 		# NOTE: The following aren't used until Part III but should be declared now
-		self.mqttClient = None 
+		
+		self.enableMqttClient = self.configUtil.getBoolean(section = ConfigConst.CONSTRAINED_DEVICE, 
+													 		key = ConfigConst.ENABLE_MQTT_CLIENT_KEY
+															)
+		
+		self.mqttClient = None
+
+		if self.enableMqttClient:
+			self.mqttClient = MqttClientConnector()
+			self.mqttClient.setDataMessageListener(self)
+		
 		self.coapClient = None
 		self.coapServer = None
 
@@ -221,6 +231,13 @@ class DeviceDataManager(IDataMessageListener):
 
 		if self.sensorAdapterMgr:
 			self.sensorAdapterMgr.startManager()
+
+		if self.mqttClient:
+			self.mqttClient.connectClient()
+			self.mqttClient.subscribeToTopic(ResourceNameEnum.CDA_ACTUATOR_CMD_RESOURCE,
+											callback=None,
+											qos=ConfigConst.DEFAULT_QOS
+											)
 		
 		logging.info("Started DeviceDataManager.")
 		
@@ -232,6 +249,10 @@ class DeviceDataManager(IDataMessageListener):
 
 		if self.sensorAdapterMgr:
 			self.sensorAdapterMgr.stopManager()
+
+		if self.mqttClient:
+			self.mqttClient.unsubscribeFromTopic(ResourceNameEnum.CDA_ACTUATOR_CMD_RESOURCE)
+			self.mqttClient.disconnectClient()
 		
 		logging.info("Stopped DeviceDataManager.")
 		
