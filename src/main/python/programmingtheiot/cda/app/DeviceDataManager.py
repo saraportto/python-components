@@ -51,6 +51,11 @@ class DeviceDataManager(IDataMessageListener):
                         		section = ConfigConst.CONSTRAINED_DEVICE, 
                        			key = ConfigConst.ENABLE_ACTUATION_KEY
                         		)
+		
+		self.enableCoapClient = self.configUtil.getBoolean(
+								section = ConfigConst.CONSTRAINED_DEVICE, 
+								key = ConfigConst.ENABLE_COAP_CLIENT_KEY
+								)
 
 		self.sysPerfMgr = None
 		self.sensorAdapterMgr = None
@@ -69,6 +74,10 @@ class DeviceDataManager(IDataMessageListener):
 			self.mqttClient.setDataMessageListener(self)
 		
 		self.coapClient = None
+
+		if self.enableCoapClient:
+			self.coapClient = CoapClientConnector(dataMsgListener = self)
+			
 		self.coapServer = None
 
 		if self.enableSystemPerf:
