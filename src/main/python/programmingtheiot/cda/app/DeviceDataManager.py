@@ -60,6 +60,7 @@ class DeviceDataManager(IDataMessageListener):
 		self.sysPerfMgr = None
 		self.sensorAdapterMgr = None
 		self.actuatorAdapterMgr = None
+		self.actuatorResponseCache = {} 
 
 		# NOTE: The following aren't used until Part III but should be declared now
 		
@@ -205,6 +206,8 @@ class DeviceDataManager(IDataMessageListener):
 		if data:
 			logging.debug("Incoming sensor data received (from sensor manager): " + str(data))
 			self._handleSensorDataAnalysis(data)
+			jsonData = DataUtil().sensorDataToJson(data = data)
+			self._handleUpstreamTransmission(resourceName = ResourceNameEnum.CDA_SENSOR_MSG_RESOURCE, msg = jsonData)
 			return True
 		else:
 			logging.warning("Incoming sensor data is invalid (null). Ignoring.")
@@ -221,6 +224,8 @@ class DeviceDataManager(IDataMessageListener):
 		"""
 		if data:
 			logging.debug("Incoming system performance message received (from sys perf manager): " + str(data))
+			jsonData = DataUtil().systemPerformanceDataToJson(data = data)
+			self._handleUpstreamTransmission(resourceName = ResourceNameEnum.CDA_SYSTEM_PERF_MSG_RESOURCE, msg = jsonData)
 			return True
 		else:
 			logging.warning("Incoming system performance data is invalid (null). Ignoring.")
@@ -317,5 +322,16 @@ class DeviceDataManager(IDataMessageListener):
 		1) Check connection: Is there a client connection configured (and valid) to a remote MQTT or CoAP server?
 		2) Act on msg: If # 1 is true, send message upstream using one (or both) client connections.
 		"""
-		pass
+		logging.info("Upstream transmission invoked. Checking comm's integration.")
 
+		if self.mqttClient:
+			if self.mqttClient.publishMessage(resource = resourceName, msg = msg):
+				logging.debug("Published incoming data to resource (MQTT): %s", str(resourceName))
+			else:
+				logging.warning("Failed to publish incoming data to resource (MQTT): %s", str(resourceName))
+
+		if self.coapClient:
+			if self.coapClient.sendPutRequest(resource = resourceName, payload = msg):
+				logging.debug("Put incoming message data to resource (CoAP): %s", str(resourceName))
+			else:
+				logging.warning("Failed to put incoming message data to resource (CoAP): %s", str(resourceName))

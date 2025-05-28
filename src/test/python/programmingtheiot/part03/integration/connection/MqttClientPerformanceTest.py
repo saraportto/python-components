@@ -19,7 +19,7 @@ from programmingtheiot.common.ResourceNameEnum import ResourceNameEnum
 from programmingtheiot.data.DataUtil import DataUtil
 from programmingtheiot.data.SensorData import SensorData
 
-class MqttClientConnectorTest(unittest.TestCase):
+class MqttClientPerformance(unittest.TestCase):
 	"""
 	This test case class contains very basic unit tests for
 	MqttClientConnector. It should not be considered complete,

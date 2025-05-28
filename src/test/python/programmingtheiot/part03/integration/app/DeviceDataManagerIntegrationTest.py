@@ -7,6 +7,7 @@
 # Copyright (c) 2020 by Andrew D. King
 # 
 
+
 import logging
 import unittest
 
@@ -48,7 +49,7 @@ class DeviceDataManagerIntegrationTest(unittest.TestCase):
 	def tearDown(self):
 		pass
 
-	@unittest.skip("Ignore for now.")
+	#@unittest.skip("Ignore for now.")
 	def testDeviceDataMgrTimedIntegration(self):
 		ddMgr = DeviceDataManager()
 		ddMgr.startManager()
